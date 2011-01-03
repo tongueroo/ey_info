@@ -1,0 +1,12 @@
+##########################################
+# ey cloud environments
+StrictHostKeyChecking no
+
+<% @hosts.keys.sort.each do |name| %>
+Host <%= name %>
+	Hostname     <%= @hosts[name] %>
+	Port         22
+	User         <%= @user %>
+	IdentityFile <%= @identify_file %>
+
+<% end %>

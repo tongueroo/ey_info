@@ -1,0 +1,23 @@
+CloudInfo::Instances outline
+1. connect to ec2
+
+2. find instances that are in the ey-env
+find ey instances from ey-recipes for specific environment
+  grab aws_group from one of the instances in the ey-env
+  instances in group
+  I can simply also just grab the instances from ey-recipes instead of working back from the aws_group..
+
+3. connect to instances (ssh) and build info
+connect to servers
+download json and store in dictionary lookup
+at this point we have enough data about the servers to build up the info we want
+
+4. hosts
+{:prod_app0 => 'xx.xx.xx.xx', :prod_app1 => 'xx.xx.xx.xx'}
+
+============
+good stopping point:
+* figure out a way to test exception from ssh.connect
+  * bad password
+  * timeout
+

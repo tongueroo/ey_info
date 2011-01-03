@@ -3,7 +3,7 @@ Ey Info
 
 Summary
 -------
-Provides more detailed information about your ey environments.  Quickly set up your ~/.ssh/config shortcuts.
+Quickly set up your ~/.ssh/config shortcuts for your ey cloud servers.
 
 Install
 -------
@@ -16,28 +16,23 @@ Usage Command Line
 -------
 
 <pre>
-# information about all of your environments
-$ ey_info list
-$ ey_info hosts
-$ ey_info uptime
-$ ey_info describe <instance-id>
-
-# information only about one environment
-$ ey_info -e beta uptime
+# will set up your ~/ssh/config shortcuts.
+$ ey_info -i "id_rsa" -u "root" # same as defaults
+$ ey_info # same as above
 </pre>
 
-Usage Quickly Setup Your .ssh/config shortcuts
--------
-
-I like to be able to go
+If you're environment in the ey cloud dashboard is called 'production' with an app_master, and 2 app instances.
 
 <pre>
-$ ssh prod_app0
+$ ssh production_app_master
 vs
-$ ssh -i ~/.ssh/id-rsa-flex-br root@ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com
-</pre>
+$ ssh -i ~/.ssh/id-rsa root@ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com
 
-$ ey_info setup # will set up your ~/ssh/config shortcuts.
+$ ssh production_app1
+$ ssh production_app2
+$ ssh production_db_master
+$ ssh production_db_slave1
+</pre>
 
 Usage With Capistrano
 -------
@@ -45,10 +40,12 @@ Usage With Capistrano
 I still find capistrano a very useful utility for debugging and still use wanted to use it with EY's cloud.
 
 <pre>
-$ cap invoke COMMAND="..." is extremely useful.
+$ cap invoke COMMAND="..." is extremely useful.  The engineyard gem provides a 
+"ey ssh 'uptime' --all -e production" command but it loops through the servers one by one instead of running
+the commands in parallel, which can be slow if you have lots of servers.
 </pre>
 
-So, you can use this gem to dynammically grab the ec2 hosts information from your ey environment and set up your
+You can use this gem to dynamically grab the ec2 hosts information from your ey environment and set up your
 capistrano roles.  
 
 Here are a few examples of how you can use it in your config/deploy.rb:
@@ -56,70 +53,19 @@ Here are a few examples of how you can use it in your config/deploy.rb:
 <pre>
 require 'ey_info'
 task :production do
-  ey_env_name = "prod1" # this is the environment name in EY's gui interface
-  ey_info = EyInfo.new(:env => ey_env_name, :private_key => "~/.ssh/id-rsa-flex-key")
+	@info = EyInfo::Hosts.new
+  hosts = @info.hosts("production") # parameter is the environment name in EY's gui interface
 
-  role :db, ey_info.app_master, :primary => true
-  # web and app instances
-  ey_info.apps.each do |info|
-    role :web, info.host
-    role :app, info.host, :sphinx => true
+  role :db, hosts.find {|x| x[:role] == "app_master" }[:ssh_key], :primary => true
+  # app instances
+  hosts.select {|x| x[:role] =~ /app/ }.each do |h|
+    role :web, h[:ssh_key]
+    role :app, h[:ssh_key], :sphinx => true
   end
-
   # utility instances
-  ey_info.utils.each do |info|
-    role :app, info.host, :sphinx => true
-  end
-end
-</pre>
-
-If you have some different usages for your EY utility instances, you filter the utils instances.
-
-
-<pre>
-require 'ey_info'
-task :production do
-  ey_env_name = "prod1" # this is the environment name in EY's gui interface
-  ey_info = EyInfo.new(:env => ey_env_name, :private_key => "~/.ssh/id-rsa-flex-key")
-
-  role :db, ey_info.app_master, :primary => true
-  # web and app instances
-  ey_info.apps.each do |info|
-    role :web, info.host
-    role :app, info.host, :sphinx => true
-  end
-
-  # utility instances
-  ey_info.utils.select{|i| i.name =~ /sphinx/ }.each do |info|
-    role :app, info.host, :sphinx => true
-  end
-  ey_info.utils.select{|i| i.name =~ /cron/ }.each do |info|
-    role :app, info.host, :sphinx => false
-  end
-end
-</pre>
-
-If you have already set up your ~/.ssh/config with ey_info setup
-
-<pre>
-require 'ey_info'
-task :production do
-  ey_env_name = "prod1" # this is the environment name in EY's gui interface
-  ey_info = EyInfo.new(:env => ey_env_name, :private_key => "~/.ssh/id-rsa-flex-key")
-
-  role :db, ey_info.app_master, :primary => true
-  # web and app instances
-  ey_info.apps.each do |info|
-    role :web, info.ssh_shortcut
-    role :app, info.ssh_shortcut, :sphinx => true
-  end
-
-  # utility instances
-  ey_info.utils.select{|i| i.name =~ /sphinx/ }.each do |info|
-    role :app, info.ssh_shortcut, :sphinx => true
-  end
-  ey_info.utils.select{|i| i.name =~ /cron/ }.each do |info|
-    role :app, info.ssh_shortcut, :sphinx => false
+  hosts.select {|x| x[:role] =~ /util/ }.each do |h|
+    role :web, h[:ssh_key]
+    role :app, h[:ssh_key], :sphinx => true
   end
 end
 </pre>
