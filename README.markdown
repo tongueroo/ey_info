@@ -53,7 +53,7 @@ Here are a few examples of how you can use it in your config/deploy.rb:
 <pre>
 require 'ey_info'
 task :production do
-	@info = EyInfo::Hosts.new
+  @info = EyInfo::Hosts.new
   hosts = @info.hosts("production") # parameter is the environment name in EY's gui interface
 
   role :db, hosts.find {|x| x[:role] == "app_master" }[:ssh_key], :primary => true
