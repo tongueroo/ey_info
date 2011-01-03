@@ -7,7 +7,7 @@ require 'pp'
 require File.expand_path("../text_injector", __FILE__)
 
 module EyInfo
-  Version = "0.1.1"
+  Version = "0.1.2"
   
   class CLI
     def self.run(args)
@@ -134,7 +134,12 @@ module EyInfo
   
   class Hosts
     def initialize(options = {})
-      @api_token = YAML.load_file(File.expand_path("~/.eyrc"))["api_token"]
+      path = File.expand_path("~/.eyrc")
+      if File.exist?(path)
+        @api_token = YAML.load_file(File.expand_path("~/.eyrc"))["api_token"]
+      else
+        raise "~/.eyrc file does not exist, need to run 'engineyard environments' at least once and log in"
+      end
       @api = EY::API.new(@api_token)
       @envs = @api.apps.map{ |a| a.environments }
     end
