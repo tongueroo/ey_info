@@ -7,7 +7,7 @@ require 'pp'
 require File.expand_path("../text_injector", __FILE__)
 
 module EyInfo
-  Version = "0.1.0"
+  Version = "0.1.1"
   
   class CLI
     def self.run(args)
@@ -36,6 +36,10 @@ module EyInfo
     
         opts.on("-u", "--user [USER]", "ssh key default root.") do |value|
           options[:user] = value
+        end
+    
+        opts.on("-t", "--template [TEMPLATE]", "path to template.") do |value|
+          options[:template] = value
         end
     
         opts.on("-h", "--help", "Display this help message.") do
@@ -120,8 +124,8 @@ module EyInfo
           @hosts["#{server[:ssh_key]}"] = server[:hostname]
         end
       end
-      # content = IO.readlines(RAILS_ROOT+"/dev/ssh_config.erb").join("")
-      content = IO.readlines(File.expand_path("../templates/default_ssh_config.erb", __FILE__)).join("")
+      path = options[:template] || File.expand_path("../templates/default_ssh_config.erb", __FILE__)
+      content = IO.readlines(path).join("")
       template = ERB.new(content)
       template.result(binding)
     end
