@@ -1,6 +1,10 @@
 ##########################################
-# ey cloud environments
+ServerAliveInterval 60
+  ServerAliveCountMax 3
+
 StrictHostKeyChecking no
+
+GatewayPorts yes 
 
 <% @hosts.keys.sort.each do |name| %>
 Host <%= name %>

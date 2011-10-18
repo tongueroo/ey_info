@@ -7,7 +7,7 @@ require 'pp'
 require File.expand_path("../text_injector", __FILE__)
 
 module EyInfo
-  Version = "0.1.2"
+  Version = "0.1.3"
   
   class CLI
     def self.run(args)
