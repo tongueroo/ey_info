@@ -1,21 +1,18 @@
-require File.expand_path('../lib/ey_info', __FILE__)
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.version         = EyInfo::Version
-    gem.name            = "ey_info"
-    gem.executables     = %W(ey_info)
-    gem.summary         = %Q{Ey Info - Easy way to setup ssh keys for ey cloud servers}
-    gem.description     = %Q{Ey Info - Easy way to setup ssh keys for ey cloud servers and also to dynamically pull server information from your ey servers and just it within capistrano.}
-    gem.homepage        = "http://github.com/tongueroo/ey_info"
-    gem.email           = [ "tongueroo@gmail.com" ]
-    gem.authors         = [ "Tung Nguyen" ]
-    gem.add_dependency  "engineyard",          ">=1.3.11"
-    # gem.add_dependency  "net-sftp",         ">=2.0.0"
-    # gem.add_development_dependency "mocha", ">= 0"
-  end
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
+require 'rubygems/package_task'
+require File.expand_path('../lib/version', __FILE__)
+spec = Gem::Specification.new do |s|
+  s.name        = 'ey_info'
+  s.version     = EyInfo::Version
+  s.summary     = %Q{Ey Info - Easy way to setup ssh keys for ey cloud servers}
+  s.description = %Q{Ey Info - Easy way to setup ssh keys for ey cloud servers and also to dynamically pull server information from your ey servers and just it within capistrano.}
+  s.authors     = ["Tung Nguyen"]
+  s.email       = [ "tongueroo@gmail.com" ]
+  s.files       = `find lib -type f`.split("\n")
+  s.homepage    = "http://github.com/tongueroo/ey_info"
+  s.executables = %W(ey_info)
+  s.add_dependency "engineyard", "1.3.17"
+end
+Gem::PackageTask.new(spec) do |pkg|
 end
 
 require 'rake/testtask'

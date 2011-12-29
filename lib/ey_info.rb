@@ -1,14 +1,14 @@
 require 'yaml'
 require 'rubygems'
+gem 'engineyard', '1.3.17'
 require 'engineyard'
 require 'optparse'
 require 'erb'
 require 'pp'
+require File.expand_path("../version", __FILE__)
 require File.expand_path("../text_injector", __FILE__)
 
 module EyInfo
-  Version = "0.1.3"
-  
   class CLI
     def self.run(args)
       cli = new(args)
