@@ -1,6 +1,6 @@
 require 'yaml'
 require 'rubygems'
-gem 'engineyard', '1.3.17'
+gem 'engineyard', '1.4.17'
 require 'engineyard'
 require 'optparse'
 require 'erb'
@@ -141,12 +141,12 @@ module EyInfo
         raise "~/.eyrc file does not exist, need to run 'engineyard environments' at least once and log in"
       end
       @api = EY::API.new(@api_token)
-      @envs = @api.apps.map{ |a| a.environments }
+      @envs = @api.environments.to_a
     end
     
     def all_hosts
       hosts = {}
-      @envs.flatten.map{|x| x.name}.sort.uniq.each do |env_name, index|
+      @envs.map{|x| x.name}.sort.uniq.each do |env_name, index|
         env_name = env_name.to_sym
         arr = []
         app_count = 0
