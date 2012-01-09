@@ -1,6 +1,6 @@
 require 'yaml'
 require 'rubygems'
-gem 'engineyard', '1.4.17'
+gem 'engineyard', '1.4.18'
 require 'engineyard'
 require 'optparse'
 require 'erb'
