@@ -10,7 +10,7 @@ spec = Gem::Specification.new do |s|
   s.files       = `find lib -type f`.split("\n")
   s.homepage    = "http://github.com/tongueroo/ey_info"
   s.executables = %W(ey_info)
-  s.add_dependency "engineyard", "1.4.17"
+  s.add_dependency "engineyard", "1.4.18"
 end
 Gem::PackageTask.new(spec) do |pkg|
 end
