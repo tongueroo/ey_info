@@ -152,7 +152,10 @@ module EyInfo
         app_count = 0
         db_count  = 0
 
-        @api.environments.match_one!(env_name.to_s).instances.sort_by {|x| x.hostname}.each do |i, idx|
+        instances = @api.environments.match_one!(env_name.to_s).instances.
+          select {|x| x.hostname}.
+          sort_by {|x| x.hostname}
+        instances.each do |i, idx|
           # if i.role == 'app_master'
           #   key = "app0"
           # elsif i.role == 'app'
